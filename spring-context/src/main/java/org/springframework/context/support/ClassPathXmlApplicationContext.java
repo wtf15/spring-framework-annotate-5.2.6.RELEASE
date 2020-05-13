@@ -82,6 +82,7 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 	 * @throws BeansException if context creation failed
 	 */
 	public ClassPathXmlApplicationContext(String configLocation) throws BeansException {
+		// >>>>>>>>>
 		this(new String[] {configLocation}, true, null);
 	}
 
@@ -138,9 +139,21 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 			String[] configLocations, boolean refresh, @Nullable ApplicationContext parent)
 			throws BeansException {
 
+		// 调用父类容器的构造方法(super(parent)方法)为容器
+		// 设置好 Bean 资源加载器
+		// >>>>>>>>>
 		super(parent);
+		// >>>>>>>>>
+		// 调用父类 AbstractRefreshableConfigApplicationContext 的 setConfigLocations(configLocations)方法
+		// 设置 Bean 配置信息的定位路径
 		setConfigLocations(configLocations);
 		if (refresh) {
+			// SpringIOC 容器对 Bean 配置资源的载入是从 refresh()函数开始的
+			// refresh()是一个模板方法，规定了 IOC 容器的启动流程，有些逻辑要交给其子类去实现
+			// refresh()方法的主要作用是:在创建 IOC 容器前，如果已经有容器存在，则需要把已有的容器销毁和关闭，
+			// 以保证在 refresh 之后使用的是新建立起来的 IOC 容器。
+			// 它类似于对 IOC 容器的重启，在新建立好的容器中对容器进行初始化，对 Bean 配置资源进行载入
+			// >>>>>>>>>
 			refresh();
 		}
 	}
