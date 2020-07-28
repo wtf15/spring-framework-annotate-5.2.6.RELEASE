@@ -90,6 +90,7 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	// 最常用的构造函数，通过将涉及到的配置类传递给该构造函数，以实现将相应配置类中的Bean自动注册到容器中
 	public AnnotationConfigApplicationContext(Class<?>... componentClasses) {
 		this();
+		// >>>>>>>>>
 		register(componentClasses);
 		refresh();
 	}
@@ -169,6 +170,7 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	@Override
 	public void register(Class<?>... componentClasses) {
 		Assert.notEmpty(componentClasses, "At least one component class must be specified");
+		// >>>>>>>>>
 		this.reader.register(componentClasses);
 	}
 
