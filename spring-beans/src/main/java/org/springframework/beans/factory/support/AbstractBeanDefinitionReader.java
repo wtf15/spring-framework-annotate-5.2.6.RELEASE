@@ -194,6 +194,7 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
 	// 重载方法，调用下面的loadBeanDefinitions(String, Set<Resource>);方法
 	@Override
 	public int loadBeanDefinitions(String location) throws BeanDefinitionStoreException {
+		// >>>>>>>>>
 		return loadBeanDefinitions(location, null);
 	}
 
@@ -266,6 +267,7 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
 		Assert.notNull(locations, "Location array must not be null");
 		int count = 0;
 		for (String location : locations) {
+			// >>>>>>>>>
 			count += loadBeanDefinitions(location);
 		}
 		return count;
