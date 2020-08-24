@@ -81,6 +81,7 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 	 * @param configLocation resource location
 	 * @throws BeansException if context creation failed
 	 */
+	// >>>>>>>>> 入口start
 	public ClassPathXmlApplicationContext(String configLocation) throws BeansException {
 		// >>>>>>>>>
 		this(new String[] {configLocation}, true, null);
