@@ -51,6 +51,7 @@ import org.springframework.util.Assert;
  * @see ClassPathBeanDefinitionScanner
  * @see org.springframework.context.support.GenericXmlApplicationContext
  */
+// >>>>>>>>> 入口start 管理注解 Bean 定义的容器
 public class AnnotationConfigApplicationContext extends GenericApplicationContext implements AnnotationConfigRegistry {
 
 	// 保存一个读取注解的Bean定义读取器，并将其设置到容器中
