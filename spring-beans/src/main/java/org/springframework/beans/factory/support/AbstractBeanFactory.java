@@ -201,6 +201,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	@Override
 	public Object getBean(String name) throws BeansException {
 		// doGetBean才是真正向IoC容器获取被管理Bean的过程
+		// >>>>>>>>>
 		return doGetBean(name, null, null, false);
 	}
 
@@ -247,6 +248,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 * @throws BeansException if the bean could not be created
 	 */
 	// 真正实现向IOC容器获取Bean的功能，也是触发依赖注入功能的地方
+	// 已经初始化过了就从容器中直接返回，否则就先初始化再返回
 	@SuppressWarnings("unchecked")
 	protected <T> T doGetBean(final String name, @Nullable final Class<T> requiredType,
 			@Nullable final Object[] args, boolean typeCheckOnly) throws BeansException {
@@ -261,6 +263,8 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		// 对于单例模式的Bean整个IOC容器中只创建一次，不需要重复创建
 		Object sharedInstance = getSingleton(beanName);
 		// IOC容器创建单例模式Bean实例对象
+		// 这里说下 args 呗，虽然看上去一点不重要。前面我们一路进来的时候都是 getBean(beanName)，
+		// 所以 args 其实是 null 的，但是如果 args 不为空的时候，那么意味着调用方不是希望获取 Bean，而是创建 Bean
 		if (sharedInstance != null && args == null) {
 			if (logger.isTraceEnabled()) {
 				// 如果指定名称的Bean在容器中已有单例模式的Bean被创建
@@ -274,8 +278,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				}
 			}
 			// 获取给定Bean的实例对象，主要是完成FactoryBean的相关处理
-			// 注意：BeanFactory是管理容器中Bean的工厂，而FactoryBean是
-			// 创建创建对象的工厂Bean，两者之间有区别
+			// 注意：BeanFactory是管理容器中Bean的工厂，而FactoryBean是创建对象的工厂Bean，两者之间有区别
 			bean = getObjectForBeanInstance(sharedInstance, name, beanName, null);
 		}
 
@@ -324,6 +327,11 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				markBeanAsCreated(beanName);
 			}
 
+			/*
+			 * 稍稍总结一下：
+			 * 到这里的话，要准备创建 Bean 了，对于 singleton 的 Bean 来说，容器中还没创建过此 Bean；
+			 * 对于 prototype 的 Bean 来说，本来就是要创建一个新的 Bean。
+			 */
 			try {
 				// 根据指定Bean名称获取其父级的Bean定义
 				// 主要解决Bean继承时子类合并父类公共属性问题
@@ -332,15 +340,17 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
 				// Guarantee initialization of beans that the current bean depends on.
 				// 获取当前Bean所有依赖Bean的名称
+				// 注意，这里的依赖指的是 depends-on 中定义的依赖
 				String[] dependsOn = mbd.getDependsOn();
 				// 如果当前Bean有依赖Bean
 				if (dependsOn != null) {
 					for (String dep : dependsOn) {
+						// 检查是不是有循环依赖，这里的循环依赖和我们前面说的循环依赖又不一样，这里肯定是不允许出现的，不然要乱套了
 						if (isDependent(beanName, dep)) {
 							throw new BeanCreationException(mbd.getResourceDescription(), beanName,
 									"Circular depends-on relationship between '" + beanName + "' and '" + dep + "'");
 						}
-						// 递归调用getBean方法，获取当前Bean的依赖Bean
+						// 注册一下依赖关系
 						registerDependentBean(dep, beanName);
 						try {
 							// 把被依赖Bean注册给当前依赖的Bean
@@ -360,6 +370,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 					sharedInstance = getSingleton(beanName, () -> {
 						try {
 							// 创建一个指定Bean实例对象，如果有父级继承，则合并子类和父类的定义
+							// >>>>>>>>>>
 							return createBean(beanName, mbd, args);
 						}
 						catch (BeansException ex) {

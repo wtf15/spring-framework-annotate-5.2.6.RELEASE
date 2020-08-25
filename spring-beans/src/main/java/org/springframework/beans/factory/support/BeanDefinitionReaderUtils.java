@@ -171,6 +171,7 @@ public abstract class BeanDefinitionReaderUtils {
 
 		// Register aliases for bean name, if any.
 		// 如果解析的BeanDefinition有别名，向容器为其注册别名
+		// 如果还有别名的话，也要根据别名统统注册一遍，不然根据别名就找不到 Bean 了
 		String[] aliases = definitionHolder.getAliases();
 		if (aliases != null) {
 			for (String alias : aliases) {

@@ -136,6 +136,8 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		this.delegate = createDelegate(getReaderContext(), root, parent);
 
 		if (this.delegate.isDefaultNamespace(root)) {
+			// 这块说的是根节点 <beans ... profile="dev" /> 中的 profile 是否是当前环境需要的，
+			// 如果当前环境配置的 profile 不包含此 profile，那就直接 return 了，不对此 <beans /> 解析
 			String profileSpec = root.getAttribute(PROFILE_ATTRIBUTE);
 			if (StringUtils.hasText(profileSpec)) {
 				String[] specifiedProfiles = StringUtils.tokenizeToStringArray(
@@ -229,6 +231,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		}
 		else if (delegate.nodeNameEquals(ele, NESTED_BEANS_ELEMENT)) {
 			// recurse
+			// 如果碰到的是嵌套的 <beans /> 标签，需要递归
 			doRegisterBeanDefinitions(ele);
 		}
 	}
@@ -358,6 +361,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	 */
 	// 解析Bean定义资源Document对象的普通元素
 	protected void processBeanDefinition(Element ele, BeanDefinitionParserDelegate delegate) {
+		// 将 <bean /> 节点中的信息提取出来，然后封装到一个 BeanDefinitionHolder 中
 		// >>>>>>>>>
 		BeanDefinitionHolder bdHolder = delegate.parseBeanDefinitionElement(ele);
 		// BeanDefinitionHolder是对BeanDefinition的封装，即Bean定义的封装类

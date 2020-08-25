@@ -327,6 +327,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 			logger.trace("Loading XML bean definitions from " + encodedResource);
 		}
 
+		// 用一个 ThreadLocal 来存放所有的配置文件资源
 		Set<EncodedResource> currentResources = this.resourcesCurrentlyBeingLoaded.get();
 
 		if (!currentResources.add(encodedResource)) {
@@ -341,7 +342,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 			if (encodedResource.getEncoding() != null) {
 				inputSource.setEncoding(encodedResource.getEncoding());
 			}
-			// 这里是具体的读取过程
+			// 这里是具体的读取过程 核心部分
 			// >>>>>>>>>
 			return doLoadBeanDefinitions(inputSource, encodedResource.getResource());
 		}
@@ -529,7 +530,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 		// 具体的解析实现过程有实现类DefaultBeanDefinitionDocumentReader完成
 		// >>>>>>>>>
 		documentReader.registerBeanDefinitions(doc, createReaderContext(resource));
-		// 统计解析的Bean数量
+		// 统计解析的Bean数量，返回从当前配置文件加载了多少数量的 Bean
 		return getRegistry().getBeanDefinitionCount() - countBefore;
 	}
 

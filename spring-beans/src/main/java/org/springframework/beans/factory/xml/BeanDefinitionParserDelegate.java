@@ -423,6 +423,7 @@ public class BeanDefinitionParserDelegate {
 		// 获取<Bean>元素中的alias属性值
 		List<String> aliases = new ArrayList<>();
 		// 将<Bean>元素中的所有name属性值存放到别名中
+		// 将 name 属性的定义按照 ”逗号、分号、空格“ 切分，形成一个别名列表数组，
 		if (StringUtils.hasLength(nameAttr)) {
 			String[] nameArr = StringUtils.tokenizeToStringArray(nameAttr, MULTI_VALUE_ATTRIBUTE_DELIMITERS);
 			aliases.addAll(Arrays.asList(nameArr));

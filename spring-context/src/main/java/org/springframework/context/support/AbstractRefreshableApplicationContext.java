@@ -130,13 +130,20 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 		}
 		try {
 			// 创建IOC容器
+			// 我们说说为什么选择实例化 DefaultListableBeanFactory ？，因为
+			// DefaultListableBeanFactory继承了AbstractAutowireCapableBeanFactory实现了
+			// ConfigurableListableBeanFactory，ConfigurableListableBeanFactory继承了
+			// HierarchicalBeanFactory、AutowireCapableBeanFactory、ListableBeanFactory
+			// 可以说DefaultListableBeanFactory基本上是最牛的 BeanFactory 了
 			DefaultListableBeanFactory beanFactory = createBeanFactory();
 			beanFactory.setSerializationId(getId());
 			// 设置两个属性：
 			// 1. 是否允许覆盖同名称的不同定义的对象
 			// 2. 是否允许bean之间存在循环依赖
+			// 如果在同一配置文件中重复了，会抛错，Spring 默认是不同文件的时候可以覆盖的
+			// 默认情况下，Spring 允许循环依赖，当然如果你在 A 的构造方法中依赖 B，在 B 的构造方法中依赖 A 是不行的
 			customizeBeanFactory(beanFactory);
-			// 调用载入Bean定义的方法，主要这里又使用了一个委派模式，
+			// 加载 Bean 到 BeanFactory 中，主要这里又使用了一个委派模式，
 			// 在当前类中只定义了抽象的loadBeanDefinitions方法，具体的实现调用子类容器
 			// 调用子类AbstractXmlApplicationContext的loadBeanDefinitions
 			// >>>>>>>>>
